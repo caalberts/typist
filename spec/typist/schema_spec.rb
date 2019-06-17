@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Typist::Method do
+RSpec.describe Typist::Schema do
   let(:params) { { x: Integer, y: String } }
   let(:result_type) { String }
 

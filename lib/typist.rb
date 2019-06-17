@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'typist/version'
-require 'typist/method'
+require 'typist/schema'
 require 'typist/signature'
 
 module Typist

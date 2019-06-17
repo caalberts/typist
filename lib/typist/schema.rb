@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Typist
-  class Method
+  class Schema
     def initialize(params)
       @param_types = params.values
     end

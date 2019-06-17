@@ -2,29 +2,39 @@
 
 module Typist
   module Signature
+    @@validators = Hash.new { |hash, key| hash[key] = Module.new }
+
     def self.included(base)
       base.extend(self)
-      base.prepend Validator
+
+      validator = @@validators[base.object_id]
+      base.prepend(validator)
     end
 
-    module Validator; end
-
     def accept(**params)
-      @method_signature = Method.new(params)
+      @signature = Method.new(params)
     end
 
     def method_added(method_name)
-      return unless @method_signature
+      return unless @signature
 
-      this_signature = @method_signature
+      validator.define_method(method_name, wrapped_with(@signature))
 
-      Validator.define_method(method_name) do |*args|
-        this_signature.validate_args!(*args)
+      @signature = nil
+    end
+
+    private
+
+    def validator
+      @@validators[self.object_id]
+    end
+
+    def wrapped_with(signature)
+      lambda do |*args|
+        signature.validate_args!(*args)
         result = super(*args)
-        this_signature.validate_return!(result)
+        signature.validate_return!(result)
       end
-
-      @method_signature = nil
     end
   end
 end

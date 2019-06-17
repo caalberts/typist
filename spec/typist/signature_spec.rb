@@ -87,5 +87,36 @@ RSpec.describe Typist::Signature do
         expect(obj.sum(1, 2)).to eq(3)
       end
     end
+
+    describe 'multiple classes' do
+      let(:int_to_str) do
+        Class.new do
+          include Typist::Signature
+
+          accept(x: Integer).return(String)
+          def to_s(x)
+            x.to_s
+          end
+        end
+      end
+
+      let(:str_to_int) do
+        Class.new do
+          include Typist::Signature
+
+          accept(x: String).return(Integer)
+          def to_i(x)
+            x.to_i
+          end
+        end
+      end
+
+      it 'validates each class' do
+        i_to_s = int_to_str.new
+        s_to_i = str_to_int.new
+        expect { i_to_s.to_s('1') }.to raise_error(Typist::ArgumentTypeError)
+        expect { s_to_i.to_i(1) }.to raise_error(Typist::ArgumentTypeError)
+      end
+    end
   end
 end
